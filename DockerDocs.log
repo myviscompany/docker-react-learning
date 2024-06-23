@@ -1,0 +1,75 @@
+1.Docker is a platform or ecosystem(Docker Client, Server,Machine, Images, Hub, Compose) around creating and running containers
+2. docker run hello-world. Steps.. docker CLI connects to docker server looks for hello-world image in Image Cache, if not present, then goes to docker Hub to fetch the image and download it and create a container.
+3. different processes on your computer (chrome, terminal, sptoify, nodejs etc..) make a system call to the OS KERNEL.. which then distributes the request among the system CPU , memory, hard disk etc.
+4. Namespacing and contol groups are used (belongs to Linux OS). Installing docker means installing a Linux Virtual Machine, which ahs its own KERNEL
+5. If there is no change in the file structure then the image from the cache is used otherwise a new image is built and snapshot is taken frp the next set of commands
+
+======================================================================
+DOCKER COMMAND:
+1.docker run busybox echo hieeee,,,,,, docker= reference to docker client, run=  try to create and run a container from the image, busybox= name of the image, echo= default command to print something, hieee= string to be printed
+02. docker ps,,,,, lists currently runnnig containers
+03. docker ps --all,,, all containers which were ever started on our machine
+04. docker create imageName,,,,, to create container, returns nothing just the id of the container
+05. docker start imageName,,,,, to start a container, returns nothing just the id of the container
+06. docker start -a imageName,,,,, -a flag looks for output from that container
+07. docker system prune,,,, removes all stopped containers, build Cache, unused networks, dangling images
+08. docker logs idOfContainer,,,, to retrieve logs of that container which ahas run and stopped
+09. docker stop idOfContainer,,,, gives SIGTERM signal, to complete some final process and then stop the container
+10. docker kill idOfContainer,,,, gives SIGKILL signal, to immediately stop the container
+11. docker exec -it idOfContainer command,,,,, exec= to execute extra set of commands in a container, -it flag = -i for input , -t for giving output in pretty text 
+12. docker exec -it idOfContainer command,,,,, sh= to run a shell
+13. two different containers have totally different file systems
+14. docker build . ,,,,,,, build= build from docker file, .(dot) = take all things from docker file
+15. docker build -t dockerCustomTagName/ProjectName:version . ,,,,,,, -t =  tagName for the docker conatiner we building, so that we don't have to deal with Id everytime
+16. docker run -p XXXX:YYYY idOfContainer or tagName,,,,,, -p =port mapping flag, XXXX= port on the local host to be mapped with port YYYY in the container
+17. docker build -f Dockerfile.dev .  ,,,, -f = tag to use a different file altogether to build the docker container
+18. docker run -p 3000:4000 -v /app/node_modules -v $(PWD):/app idOfContainer ,,,,,,, -v = used to create volumes , $(PWD) = refers to the current working directory of , : = used for mapping of one volume to other... meaning we want to map a folder inside the container (here app folder) to outside the container (here present working directory), so if the container wants to access anyting inside app folder of the container, ther it will reach to pwd on the local machine. Also, additional -v /app/node_modules means that we are not doing any mappping here, we just want to create a reference for this folder inside the cntainer.
+19. docker attach containerId,,,,, used to attach to primary processes (stdin,stdout,stderr etc) in that container via terminal. We never attach to the secondary process which is generally created by the primary process (here npm looks at our provided arguments and creates this)
+20. we can have different sections in 1 docker file (ex build phase, run pahse) 
+
+======================================================================
+INSIDE DOCKER FILE :
+01. FROM imageName as PhaseName,,,,,, FROM alpine image.... phaseName is builder phase
+02. RUN add some dependency,,,,,, RUN  npm install
+03. WORKDIR ,,,, to do all the dockerFile configurations in this directory
+04. COPY something from somewhere... copy --from=builder /app/foldername...... here builder is phaseName
+05. CMD ["string1", "string2", "string3",.....],,,, the commands to run when the container is finally ready with all dependencies and files
+
+======================================================================
+INSIDE DOCKER COMPOSE FILE:
+01.This file is used to give internal network connection betweeen multiple applications (ex nodejs, redis, react etc..) running in different containers so ṭhat they can inteact between themselves and exchange data. 
+02. Its a separate CLI that gets installed along with docker. Its used to start up multiple docker containers at the smae time. docker-compose.yml Inside a yml file indetation is to be taken care of
+
+03. version : version of the build
+04. services : indented list of service to be run (ex nodejs, redis, react etc..) 
+05. image : to use some image from docekr hub
+06. build : . (dot) to build from docker file, 
+06--a context : from where do we want all the files and folders to be pulled from to create the image, --b dockerfile : Docekrfile.dev file name
+07. ports : -"4001:8001" for mapping
+08. restart : always
+09. volumes : -/app/node_modules ....  .:/app
+01. command : ["string1", "string2", "string3",.....]
+
+======================================================================
+DOCKER COMPOSE COMMAND:
+01. docker-compose up,,,,,,  to run the docker image
+02. docker-compose up --build,,,, to builda the image and then run it
+03. docker-compose up -d,,,, -d= flag to run docker image in background
+04. docker-compose down,,,, to stop 
+05. docker-compose ps,,,, to list staus of all conatiners
+
+======================================================================
+RESTART POLICIES:
+1. "no" -never attempt to start the container even if it crashes. Has to user double quotes, bcz in yml file no is considers as boolean false
+2. always - if container stops for any reason , always attempt to restart it
+3. on-failure - if conatiner stops with some error code
+4. unless-stopped - always start unless the developer forcibly stops it
+
+
+======================================================================
+NPM:
+01. npm run start - start development server. for development use only.
+02. npm run test - run tests associated with the Project
+03. npm run build - build a production version of the application   
+
+Nginx is web server
